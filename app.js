@@ -25,6 +25,9 @@ const ENDPOINT_CONFIGS = [
   {
     path: './endpoints/onboarding/',
   },
+  {
+    path: './endpoints/payment-instructions/',
+  },
 ];
 
 function logEndpointMetaData(endpointConfigs) {
@@ -71,15 +74,17 @@ if (canLogEndpointInformation) {
 function setupEndpointHandlers(basePath, options = {}) {
   const dirs = fs.readdirSync(basePath);
 
-  dirs.forEach((file) => {
-    const handler = require(`${basePath}${file}`);
+  dirs
+    .filter((file) => file.endsWith('.js') && !file.endsWith('.test.js'))
+    .forEach((file) => {
+      const handler = require(`${basePath}${file}`);
 
-    if (options.pathPrefix) {
-      handler.path = `${options.pathPrefix}${handler.path}`;
-    }
+      if (options.pathPrefix) {
+        handler.path = `${options.pathPrefix}${handler.path}`;
+      }
 
-    server.addHandler(handler);
-  });
+      server.addHandler(handler);
+    });
 }
 
 ENDPOINT_CONFIGS.forEach((config) => {
